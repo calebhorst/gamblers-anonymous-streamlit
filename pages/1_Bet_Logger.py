@@ -8,12 +8,11 @@ from utils import filter_dataframe
 # ###########################################################################
 # Show app title and description.
 # ###########################################################################
-st.set_page_config(page_title="Gamblers Anonymous", page_icon="🎰")
-st.title("📒 Gamblers Anonymous Bet Log")
+st.set_page_config(page_title="Bet Logger", page_icon="📒")
+st.title("📒 Bet Logger 📒")
 st.write(
     """
-    Welcome to the home of degenerate parlays! This log contains data on bets placed by several (non addicted)
-    sports betters beginning in January, 2025. Remember to read and adhere to the "Gamblers Manifesto"!
+    Add a new bet slip to the archive.
     """
 )
 
@@ -53,7 +52,7 @@ yes_no = ["No", "Yes"]
 # ###########################################################################
 st.header("Log a New Bet Slip")
 st.info(
-    "You can add a new bet slip by entering information into the form below. If a bet result and payout become known, please use the table below and sort by bet status to find \"Placed\" bet slips.",
+    "You can add a new bet slip by entering information into the form below. If a bet result and payout becomes known, please use the table below and sort by bet status to find \"Placed\" bet slips.",
     icon="✍️",
 )
 with st.form("add_bet_slip_form"):
@@ -320,13 +319,3 @@ edited_df = st.data_editor(
     # Disable editing
     disabled=[],
 )
-
-# ###########################################################################
-# User input for filtering dataframe
-# ###########################################################################
-st.dataframe(filter_dataframe(edited_df))
-
-# ###########################################################################
-# TODO: Update existing bet slip contents to sheet (full truncate-reload from df?)
-# ###########################################################################
-
