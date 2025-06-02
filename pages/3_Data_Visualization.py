@@ -15,6 +15,7 @@ st.write(
     Overall statistics and aggregate calculations for historical bet data.
     """
 )
+st.divider()
 
 # ###########################################################################
 # Create a connection object.
@@ -69,3 +70,5 @@ st.header("Statistics & Data Visualization")
 #     )
 # )
 # st.altair_chart(priority_plot, use_container_width=True, theme="streamlit")
+
+st.divider()

@@ -15,6 +15,7 @@ st.write(
     Add a new bet slip to the archive.
     """
 )
+st.divider()
 
 # ###########################################################################
 # Create a connection object.
@@ -197,9 +198,8 @@ if submitted:
 # ###########################################################################
 # Show section to view and edit existing bets in a table.
 # ###########################################################################
-st.header("Historical Bet Records")
-st.write(f"Number of total bets placed: `{len(st.session_state.df)}`")
-
+st.divider()
+st.header("Update an existing bet")
 st.info(
     "You can edit the bet slips by double clicking on a cell. The table is sortable by clicking on column headers.",
     icon="✍️",
@@ -319,3 +319,5 @@ edited_df = st.data_editor(
     # Disable editing
     disabled=[],
 )
+
+st.divider()

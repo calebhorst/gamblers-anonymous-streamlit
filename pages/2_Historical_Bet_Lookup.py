@@ -14,6 +14,7 @@ st.write(
     A historical data lookup for all bets placed through the `Gamblers Anonymous` support group. Many :green[winners]! ... and even more :red[losers]!
     """
 )
+st.divider()
 
 # ###########################################################################
 # Create a connection object.
@@ -42,3 +43,4 @@ st.info(
 # User input for filtering dataframe
 # ###########################################################################
 st.dataframe(filter_dataframe(df))
+st.divider()

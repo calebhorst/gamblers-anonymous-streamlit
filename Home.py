@@ -5,6 +5,7 @@ import streamlit as st
 # ###########################################################################
 st.set_page_config(page_title="Gamblers Anonymous", page_icon="💸")
 st.title("💸 Gamblers Anonymous 💸")
+st.divider()
 st.markdown(
     """
     ## :green[Welcome to the home of degenerate parlays!]
@@ -24,3 +25,4 @@ st.markdown(
         We don't talk about that anymore. The charges were rescinded.
     """
 )
+st.divider()
