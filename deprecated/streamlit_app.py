@@ -26,6 +26,7 @@ df = conn.read()
 # Convert to datetime.date
 df['Bet Date'] = pd.to_datetime(df['Bet Date']).dt.date
 df['Bet Odds'] = df["Bet Odds"].astype(str)
+df['Certified Degenerate Bet'] = pd.Series.str.title(df["Certified Degenerate Bet"])
 
 st.session_state.df = df
 
@@ -38,12 +39,12 @@ datetime_cst_na = datetime.now(cst_na).date()
 # ###########################################################################
 # selectbox Lists
 # ###########################################################################
-sportsbook_selectbox = ["PrizePicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potowatomi Casino", "ParlayPlay", "FanDuel"]
+sportsbook_selectbox = ["Prizepicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potowatomi", "ParlayPlay", "FanDuel", "Sportzino", "Thrillz", "Rebet", "Novig"]
 gambler_selectbox = ["Alex Hennes", "Ty Mallo", "Bryan Driebel", "Dustin Wendegatz"]
 status_selectbox = ["Placed", "Win", "Loss", "Push", "Reboot"]
 risk_type_selectbox = ["Cash", "Promotion"]
 bet_type_selectbox = ["Straight", "Parlay", "Future"]
-bet_category_selectbox = ["Player Prop", "Moneyline", "Spread", "Totals", "Mixed"]
+bet_category_selectbox = ["Prop", "Moneyline", "Spread", "Totals", "Mixed"]
 bet_sport_selectbox = ["Baseball", "Football", "Basketball", "Hockey", "Tennis", "Soccer", "Golf", "Other"]
 yes_no = ["No", "Yes"]
 

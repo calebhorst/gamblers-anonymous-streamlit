@@ -26,6 +26,7 @@ df = conn.read()
 # Convert to datetime.date
 df['Bet Date'] = pd.to_datetime(df['Bet Date']).dt.date
 df['Bet Odds'] = df["Bet Odds"].astype(str)
+df['Certified Degenerate Bet'] = (df["Certified Degenerate Bet"]).str.title()
 
 st.session_state.df = df
 
@@ -38,12 +39,12 @@ datetime_cst_na = datetime.now(cst_na).date()
 # ###########################################################################
 # selectbox Lists
 # ###########################################################################
-sportsbook_selectbox = ["PrizePicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potowatomi Casino", "ParlayPlay", "FanDuel"]
+sportsbook_selectbox = ["Prizepicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potowatomi", "ParlayPlay", "FanDuel", "Thrillz", "Rebet", "Novig"]
 gambler_selectbox = ["Alex Hennes", "Ty Mallo", "Bryan Driebel", "Dustin Wendegatz"]
 status_selectbox = ["Placed", "Win", "Loss", "Push", "Reboot"]
 risk_type_selectbox = ["Cash", "Promotion"]
 bet_type_selectbox = ["Straight", "Parlay", "Future"]
-bet_category_selectbox = ["Player Prop", "Moneyline", "Spread", "Totals", "Mixed"]
+bet_category_selectbox = ["Prop", "Moneyline", "Spread", "Totals", "Mixed"]
 bet_sport_selectbox = ["Baseball", "Football", "Basketball", "Hockey", "Tennis", "Soccer", "Golf", "Other"]
 yes_no = ["No", "Yes"]
 
@@ -64,17 +65,21 @@ with st.form("add_bet_slip_form"):
         ,index=None
         ,placeholder="Select gambler name..."
     )
-    sportsbook = st.selectbox(
-        "Sportsbook Name"
-        ,sportsbook_selectbox
-        ,index=None
-        ,placeholder="Select sportsbook name..."
+    bet_date = st.date_input(
+        "Bet Date"
+        ,value=datetime_cst_na
     )
     status = st.selectbox(
         "Bet Status"
         ,status_selectbox
         ,index=None
         ,placeholder="Select bet status..."
+    )
+    sportsbook = st.selectbox(
+        "Sportsbook Name"
+        ,sportsbook_selectbox
+        ,index=None
+        ,placeholder="Select sportsbook name..."
     )
     risk_type = st.selectbox(
         "Bet Risk Type"
@@ -98,10 +103,6 @@ with st.form("add_bet_slip_form"):
         ,bet_sport_selectbox
         ,index=None
         ,placeholder="Select bet sport(s)..."
-    )
-    bet_date = st.date_input(
-        "Bet Date"
-        ,value=datetime_cst_na
     )
     bet_amount = st.number_input(
         "Bet Amount"
@@ -205,6 +206,7 @@ st.info(
     icon="✍️",
 )
 
+
 # ###########################################################################
 # Show the bets dataframe with `st.data_editor`. This lets the user edit the table cells. The edited data is returned as a new dataframe.
 # ###########################################################################
@@ -264,27 +266,31 @@ edited_df = st.data_editor(
             "Bet Amount",
             help="If a risk free promo bet, enter 0...",
             min_value=0,
+            format="dollar",
             required=True,
         ), 
         "Bet Promotion Amount": st.column_config.NumberColumn(
             "Bet Promotion Amount",
             help="If a risk free promo bet, enter value here. Otherwise enter 0...",
             min_value=0,
+            format="dollar",
             required=True,
         ), 
         "Bet Payout Amount": st.column_config.NumberColumn(
             "Bet Payout Amount",
             help="If the bet is settled, enter total payout amount. Otherwise enter 0 to update later...",
             min_value=0,
+            format="dollar",
             required=True,
         ), 
         "Bet Net Win Amount": st.column_config.NumberColumn(
             "Bet Net Win Amount",
             help="If the bet pays any nonzero amount, enter total payout amount. Otherwsie enter 0...",
             min_value=0,
+            format="dollar",
             required=True,
         ), 
-        "Bet Odds": st.column_config.TextColumn(
+        "Bet Odds": st.column_config.NumberColumn(
             "Bet Odds",
             help="Enter bet odds, including +/- (American)",
             required=True,
@@ -319,5 +325,9 @@ edited_df = st.data_editor(
     # Disable editing
     disabled=[],
 )
+
+# ###########################################################################
+# TODO: Write updated bet slip contents to sheet
+# ###########################################################################
 
 st.divider()
