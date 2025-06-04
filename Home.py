@@ -23,6 +23,8 @@ st.markdown(
         Remember to read and adhere to the "Gamblers Manifesto"!
     ### Why were you banned from PrizePicks?
         We don't talk about that anymore. The charges were rescinded.
+    ### Isn't sports betting illegal in some states?
+        What are you, a nark?             
     """
 )
 st.divider()

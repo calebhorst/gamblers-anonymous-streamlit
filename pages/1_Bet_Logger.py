@@ -3,7 +3,9 @@ import pytz
 import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
-from utils import filter_dataframe
+import gspread
+from utils import gspread_connection
+import time
 
 # ###########################################################################
 # Show app title and description.
@@ -23,6 +25,13 @@ st.divider()
 # ###########################################################################
 conn = st.connection("gsheets", type=GSheetsConnection)
 df = conn.read()
+
+sheet_name = "Gamblers Anonymous Streamlit"
+tab_name = "Master"
+gc = gspread.service_account(filename='secrets/google-credentials.json')
+google_sheet = gc.open(sheet_name)
+google_worksheet = google_sheet.worksheet(tab_name)
+
 # Convert to datetime.date
 df['Bet Date'] = pd.to_datetime(df['Bet Date']).dt.date
 df['Bet Odds'] = df["Bet Odds"].astype(str)
@@ -39,7 +48,7 @@ datetime_cst_na = datetime.now(cst_na).date()
 # ###########################################################################
 # selectbox Lists
 # ###########################################################################
-sportsbook_selectbox = ["Prizepicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potowatomi", "ParlayPlay", "FanDuel", "Thrillz", "Rebet", "Novig"]
+sportsbook_selectbox = ["Prizepicks", "Underdog", "Fliff", "Sleeper", "Chalkboard", "Boom Fantasy", "Potawatomi", "ParlayPlay", "FanDuel", "ProphetX", "Thrillz", "Rebet", "Novig"]
 gambler_selectbox = ["Alex Hennes", "Ty Mallo", "Bryan Driebel", "Dustin Wendegatz"]
 status_selectbox = ["Placed", "Win", "Loss", "Push", "Reboot"]
 risk_type_selectbox = ["Cash", "Promotion"]
@@ -115,21 +124,18 @@ with st.form("add_bet_slip_form"):
         "Bet Promotion Amount"
         ,format="%.2f"
         ,min_value=0.00
-        ,placeholder="($USD) If a risk free promo bet, enter value here. Otherwise enter 0..."
         ,value=0.00
     )
     bet_payout_amount = st.number_input(
         "Bet Payout Amount"
         ,format="%.2f"
         ,min_value=0.00
-        ,placeholder="($USD) If the bet is settled, enter total payout amount. Otherwise enter 0 to update later..."
         ,value=0.00
     )
     bet_net_win_amount = st.number_input(
         "Bet Net Win Amount"
         ,format="%.2f"
         ,min_value=0.00
-        ,placeholder="($USD) If the bet pays any nonzero amount, enter total payout amount. Otherwsie enter 0..."
         ,value=0.00
     )
     bet_odds = st.text_input(
@@ -188,12 +194,17 @@ if submitted:
     # Show a success message & combine df
     # ###########################################################################
     st.write("Bet slip submitted! 🤑 Here are the details:")
-    st.dataframe(df_with_submitted, use_container_width=True, hide_index=True, num_rows="dynamic")
+    st.dataframe(df_with_submitted, use_container_width=True, hide_index=True)
     st.session_state.df = pd.concat([df_with_submitted, st.session_state.df], axis=0)
 
     # ###########################################################################
-    # TODO: Write new bet slip contents to sheet
-    # ###########################################################################
+    # Write new bet slip contents to sheet
+    # ###########################################################################    
+    df_with_submitted["Bet Date"] = df_with_submitted["Bet Date"].astype(str)
+    df_with_submitted = df_with_submitted.fillna("N/A")
+
+    google_worksheet.append_rows(df_with_submitted.values.tolist(), value_input_option="USER_ENTERED")
+    
 
 
 # ###########################################################################
@@ -325,9 +336,37 @@ edited_df = st.data_editor(
     # Disable editing
     disabled=[],
 )
+st.session_state.df = edited_df
 
 # ###########################################################################
-# TODO: Write updated bet slip contents to sheet
+#  Write updated bet slip contents to sheet
 # ###########################################################################
+st.button(label="Submit Update(s)",
+            type="primary",
+            icon="🗳️",
+        )
+
+if st.button:
+    df_update_existing_bet = edited_df
+    df_update_existing_bet["Bet Date"] = df_update_existing_bet["Bet Date"].astype(str)
+    df_update_existing_bet = df_update_existing_bet.fillna("N/A")
+
+    # Create a backup as the update process is truncate-load
+    data = google_worksheet.get_all_values()
+    # Create or get backup tab
+    backup_ws = google_sheet.worksheet("Backup")
+    backup_ws.clear()
+    backup_ws.update("A1", data)
+
+    # google_worksheet.clear()
+    google_worksheet.update("A1",
+                            [df_update_existing_bet.columns.tolist()] + df_update_existing_bet.values.tolist(),
+                             value_input_option="RAW"
+                        )
+    with st.empty():
+        for seconds in range(2):
+            st.write(f"✅ Successfully wrote bet update(s)!")
+            time.sleep(5)
+        st.write("")
 
 st.divider()
