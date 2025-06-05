@@ -19,7 +19,7 @@ st.write(
 st.divider()
 
 st.info(
-    "You can filter the dataset to any combination of the following to slice and dice the visuals. All visuals refresh based on the multi-select input boxes.",
+    "Not all of us can be money like Sandy Alcantara, thats what makes him the 🐐",
     icon="✍️",
 )
 
