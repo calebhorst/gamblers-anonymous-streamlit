@@ -4,7 +4,6 @@ import pandas as pd
 import streamlit as st
 from streamlit_gsheets import GSheetsConnection
 import gspread
-from utils import gspread_connection
 import time
 
 # ###########################################################################
@@ -61,6 +60,11 @@ yes_no = ["No", "Yes"]
 # Show a form to add a new bet slip.
 # We're adding bets via an `st.form` and some input widgets. If widgets are used in a form, the app will only rerun once the submit button is pressed.
 # ###########################################################################
+if 'form_submitted' not in st.session_state:
+    st.session_state.form_submitted = False
+if 'validation_messages' not in st.session_state:
+    st.session_state.validation_messages = []
+
 st.header("Log a New Bet Slip")
 st.info(
     "You can add a new bet slip by entering information into the form below. If a bet result and payout becomes known, please use the table below and sort by bet status to find \"Placed\" bet slips.",
@@ -164,46 +168,66 @@ with st.form("add_bet_slip_form"):
     submitted = st.form_submit_button("Submit")
 
 if submitted:
-    # Make a dataframe for the new bet slip and append it to the dataframe in session state.
-    df_with_submitted = pd.DataFrame(
-        [
-            {
-                "Gambler Name": gambler,
-                "Sportsbook Name": sportsbook,
-                "Bet Status": status,
-                "Bet Risk Type": risk_type,
-                "Bet Type": bet_type,
-                "Bet Cateogry": bet_category,
-                "Bet Sport": bet_sport,
-                "Bet Date": bet_date,
-                "Bet Amount": bet_amount,
-                "Bet Promotion Amount": bet_promo_amount,
-                "Bet Payout Amount": bet_payout_amount,
-                "Bet Net Win Amount": bet_net_win_amount,
-                "Bet Odds": bet_odds,
-                "Bet Team/Player(s)": bet_team_player,
-                "Bet Statistic(s)": bet_stat,
-                "Bet Game(s)": bet_game,
-                "Certified Degenerate Bet": degen_bet,
-                "Notes": notes,
-            }
-        ]
-    )
+    required_fields = {
+        "Gambler Name": gambler,
+        "Bet Status": status,
+        "Sportsbook Name": sportsbook,
+        "Bet Risk Type": risk_type,
+        "Bet Type": bet_type,
+        "Bet Category": bet_category,
+        "Bet Sport": bet_sport,
+        "Bet Odds": bet_odds,
+        "Bet Team/Player(s)": bet_team_player,
+        "Bet Statistic(s)": bet_stat,
+        "Bet Game(s)": bet_game,
+        "Certified Degenerate Bet": degen_bet,
+    }
 
-    # ###########################################################################
-    # Show a success message & combine df
-    # ###########################################################################
-    st.write("Bet slip submitted! 🤑 Here are the details:")
-    st.dataframe(df_with_submitted, use_container_width=True, hide_index=True)
-    st.session_state.df = pd.concat([df_with_submitted, st.session_state.df], axis=0)
+    # Check for any missing or empty required fields
+    missing_fields = [name for name, value in required_fields.items() if not value]
 
-    # ###########################################################################
-    # Write new bet slip contents to sheet
-    # ###########################################################################    
-    df_with_submitted["Bet Date"] = df_with_submitted["Bet Date"].astype(str)
-    df_with_submitted = df_with_submitted.fillna("N/A")
+    if missing_fields:
+        st.error(f"Please complete all required fields before submitting: {', '.join(missing_fields)}")
+    else:
+        df_with_submitted = pd.DataFrame(
+            [
+                {
+                    "Gambler Name": gambler,
+                    "Sportsbook Name": sportsbook,
+                    "Bet Status": status,
+                    "Bet Risk Type": risk_type,
+                    "Bet Type": bet_type,
+                    "Bet Cateogry": bet_category,
+                    "Bet Sport": bet_sport,
+                    "Bet Date": bet_date,
+                    "Bet Amount": bet_amount,
+                    "Bet Promotion Amount": bet_promo_amount,
+                    "Bet Payout Amount": bet_payout_amount,
+                    "Bet Net Win Amount": bet_net_win_amount,
+                    "Bet Odds": bet_odds,
+                    "Bet Team/Player(s)": bet_team_player,
+                    "Bet Statistic(s)": bet_stat,
+                    "Bet Game(s)": bet_game,
+                    "Certified Degenerate Bet": degen_bet,
+                    "Notes": notes,
+                }
+            ]
+        )
 
-    google_worksheet.append_rows(df_with_submitted.values.tolist(), value_input_option="USER_ENTERED")
+        # ###########################################################################
+        # Show a success message & combine df
+        # ###########################################################################
+        st.success("🤑 Bet slip submitted! Details can be found below.")
+        st.dataframe(df_with_submitted, use_container_width=True, hide_index=True)
+        st.session_state.df = pd.concat([df_with_submitted, st.session_state.df], axis=0)
+
+        # ###########################################################################
+        # Write new bet slip contents to sheet
+        # ###########################################################################    
+        df_with_submitted["Bet Date"] = df_with_submitted["Bet Date"].astype(str)
+        df_with_submitted = df_with_submitted.fillna("N/A")
+
+        google_worksheet.append_rows(df_with_submitted.values.tolist(), value_input_option="USER_ENTERED")
     
 
 
@@ -341,12 +365,12 @@ st.session_state.df = edited_df
 # ###########################################################################
 #  Write updated bet slip contents to sheet
 # ###########################################################################
-st.button(label="Submit Update(s)",
+submit_update = st.button(label="Submit Update(s)",
             type="primary",
             icon="🗳️",
         )
 
-if st.button:
+if submit_update:
     df_update_existing_bet = edited_df
     df_update_existing_bet["Bet Date"] = df_update_existing_bet["Bet Date"].astype(str)
     df_update_existing_bet = df_update_existing_bet.fillna("N/A")
@@ -364,9 +388,8 @@ if st.button:
                              value_input_option="RAW"
                         )
     with st.empty():
-        for seconds in range(2):
-            st.write(f"✅ Successfully wrote bet update(s)!")
-            time.sleep(5)
+        st.success("✅ Successfully wrote bet update(s)!")
+        time.sleep(5)
         st.write("")
 
 st.divider()

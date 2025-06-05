@@ -83,25 +83,3 @@ def filter_dataframe(df: pd.DataFrame) -> pd.DataFrame:
                     df = df[df[column].astype(str).str.contains(user_text_input)]
 
     return df
-
-
-# ###########################################################################
-# Create a connection object.
-# Save the dataframe in session state (a dictionary-like object that persists across page runs). This ensures our data is persisted when the app updates.
-# ###########################################################################
-def gspread_connection():
-    conn = st.connection("gsheets", type=GSheetsConnection)
-    df = conn.read()
-
-    sheet_name = "Gamblers Anonymous Streamlit"
-    tab_name = "Master"
-    gc = gspread.service_account(filename='secrets/google-credentials.json')
-    google_sheet = gc.open(sheet_name)
-    google_worksheet = google_sheet.worksheet(tab_name)
-
-    # Convert to datetime.date
-    df['Bet Date'] = pd.to_datetime(df['Bet Date']).dt.date
-    df['Bet Odds'] = df["Bet Odds"].astype(str)
-    df['Certified Degenerate Bet'] = (df["Certified Degenerate Bet"]).str.title()
-
-    st.session_state.df = df
