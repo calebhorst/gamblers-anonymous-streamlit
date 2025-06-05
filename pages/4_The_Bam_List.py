@@ -19,7 +19,7 @@ st.write(
 st.divider()
 
 st.info(
-    "Not all of us can be money like Sandy Alcantara, thats what makes him the 🐐",
+    "Not all of us can be money like Sandy Alcantara, thats what makes him the 🐐.",
     icon="✍️",
 )
 

@@ -23,8 +23,9 @@ st.markdown(
         Remember to read and adhere to the "Gamblers Manifesto"!
     ### Why were you banned from PrizePicks?
         We don't talk about that anymore. The charges were rescinded.
-    ### Isn't sports betting illegal in some states?
-        What are you, a nark?             
+    ### What bets should I place for a guaranteed win?
+        1. Obi Toppin - Over 4.5 R+A
+        2. Sanday Alcantara - Under 17.5 Pitching Outs            
     """
 )
 st.divider()
