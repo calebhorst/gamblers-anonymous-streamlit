@@ -15,7 +15,7 @@ st.markdown(
     - Visualizing betting data to refine betting analysis
     
     ## :green[The Basics]
-    ### Aren't you addited to gambling?
+    ### Aren't you addicted to gambling?
         No. We are all emotionless, calculating, and economically rational individuals.
     ### What's the number for gambling help?
         1-800-GAMBLER
