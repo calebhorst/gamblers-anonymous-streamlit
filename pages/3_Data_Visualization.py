@@ -8,7 +8,7 @@ from utils import filter_dataframe
 # ###########################################################################
 # Show app title and description.
 # ###########################################################################
-st.set_page_config(page_title="Data Visualization", page_icon="📊")
+st.set_page_config(page_title="Data Visualization", page_icon="📊", layout="wide")
 st.title("📊 Data Visualization 📊")
 st.write(
     """

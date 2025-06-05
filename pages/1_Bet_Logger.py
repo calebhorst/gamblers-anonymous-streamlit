@@ -9,7 +9,7 @@ import time
 # ###########################################################################
 # Show app title and description.
 # ###########################################################################
-st.set_page_config(page_title="Bet Logger", page_icon="📒")
+st.set_page_config(page_title="Bet Logger", page_icon="📒", layout="wide")
 st.title("📒 Bet Logger 📒")
 st.write(
     """

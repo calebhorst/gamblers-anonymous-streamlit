@@ -7,7 +7,7 @@ from utils import filter_dataframe
 # ###########################################################################
 # Show app title and description.
 # ###########################################################################
-st.set_page_config(page_title="Historical Bet Lookup", page_icon="🔎")
+st.set_page_config(page_title="Historical Bet Lookup", page_icon="🔎", layout="wide")
 st.title("🔎 Historical Bet Lookup 🔎")
 st.write(
     """

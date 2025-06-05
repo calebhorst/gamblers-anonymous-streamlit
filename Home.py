@@ -3,7 +3,7 @@ import streamlit as st
 # ###########################################################################
 # Show app title and description.
 # ###########################################################################
-st.set_page_config(page_title="Gamblers Anonymous", page_icon="💸")
+st.set_page_config(page_title="Gamblers Anonymous", page_icon="💸", layout="wide")
 st.title("💸 Gamblers Anonymous 💸")
 st.divider()
 st.markdown(
